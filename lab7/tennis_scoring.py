@@ -1,15 +1,47 @@
 def parse_score(text):
-    a, b = text.split('-')
-    return int(a), int(b)
+    if not isinstance(text, str):
+        return None
+    parts = text.split('-')
+    if len(parts) != 2:
+        return None
+    a, b = parts[0].strip(), parts[1].strip()
+    try:
+        return int(a), int(b)
+    except (ValueError, TypeError):
+        return None
+
 
 def game_lead(text):
+    if not isinstance(text, str):
+        return None
     points = {'0': 0, '15': 1, '30': 2, '40': 3}
-    first, second = text.split('-')
+    parts = text.split('-')
+    if len(parts) != 2:
+        return None
+    first, second = parts[0].strip(), parts[1].strip()
+    if first not in points or second not in points:
+        return None
     return points[first] - points[second]
 
+
 def set_spread(games_csv):
-    games = [int(g) for g in games_csv.split(',')]
+    if not isinstance(games_csv, str):
+        return None
+    if not games_csv.strip():
+        return None
+    games = []
+    for g in games_csv.split(','):
+        g = g.strip()
+        if not g:
+            continue
+        try:
+            games.append(int(g))
+        except (ValueError, TypeError):
+            return None
+    if not games:
+        return None
     return max(games) - min(games)
+
 
 def main():
     print("==== Running parse_score ====")
@@ -26,6 +58,7 @@ def main():
     user_input = input("Enter games won per set as CSV (e.g. 6,4,7): ")
     result = set_spread(user_input)
     print("Spread:", result)
+
 
 if __name__ == "__main__":
     main()
